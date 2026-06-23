@@ -24,8 +24,6 @@ make run-dist
 make build-and-run
 ```
 
-> Требуется OpenJDK версии 21 и Gradle версии не ниже 8.7
-
 Запуск тестов проекта
 
 ```bash
