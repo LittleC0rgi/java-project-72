@@ -45,7 +45,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-makefile
 CONVENTIONS.md
 .aider*
 .env
