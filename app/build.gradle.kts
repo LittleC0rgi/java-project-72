@@ -1,8 +1,12 @@
 plugins {
-    id("java")
+    id("application")
     id("checkstyle")
     id("jacoco")
     id("org.sonarqube") version "7.2.3.7755"
+}
+
+application {
+    mainClass.set("hexlet.code.Main")
 }
 
 group = "hexlet.code"
@@ -13,6 +17,8 @@ repositories {
 }
 
 dependencies {
+    implementation("io.javalin:javalin:7.2.2")
+    implementation("org.slf4j:slf4j-simple:2.0.18")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
