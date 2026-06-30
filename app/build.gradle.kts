@@ -6,7 +6,7 @@ plugins {
 }
 
 application {
-    mainClass.set("hexlet.code.Main")
+    mainClass.set("hexlet.code.App")
 }
 
 group = "hexlet.code"
@@ -17,8 +17,12 @@ repositories {
 }
 
 dependencies {
+    implementation("com.h2database:h2:2.4.240")
+    implementation("com.zaxxer:HikariCP:7.0.2")
+
     implementation("io.javalin:javalin:7.2.2")
     implementation("org.slf4j:slf4j-simple:2.0.18")
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
