@@ -1,9 +1,15 @@
-@template.layout.page(content = @`
+@import hexlet.code.util.NamedRoutes
+@import hexlet.code.dto.BasePage
+@param BasePage page
+
+@template.layout.page(
+page = page,
+content = @`
     <div class="row">
         <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
             <h1 class="display-3">Анализатор страниц</h1>
             <p class="lead">Бесплатно проверяйте сайты на SEO пригодность</p>
-            <form action="/urls" method="post" class="row">
+            <form action="${NamedRoutes.basePath()}" method="post" class="row">
                 <div class="col-8">
                     <label for="url-name" class="visually-hidden">Url для проверки</label>
                     <input

@@ -5,7 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 public class App {
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", "7070");
-        return Integer.valueOf(port);
+        return Integer.parseInt(port);
     }
 
     private static String getDBURL() {
@@ -36,8 +38,7 @@ public class App {
     private static TemplateEngine createTemplateEngine() {
         ClassLoader classLoader = App.class.getClassLoader();
         ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
-        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
-        return templateEngine;
+        return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 
 
@@ -60,7 +61,10 @@ public class App {
             config.routes.before(ctx -> {
                 ctx.contentType("text/html; charset=utf-8");
             });
-            config.routes.get("/", ctx -> ctx.render("index.jte"));
+            config.routes.get(NamedRoutes.basePath(), UrlsController::base);
+            config.routes.post(NamedRoutes.basePath(), UrlsController::create);
+            config.routes.get(NamedRoutes.urlsPath(), UrlsController::index);
+            config.routes.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
         });
     }
 
