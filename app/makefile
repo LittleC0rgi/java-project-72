@@ -13,6 +13,10 @@ clean:
 run:
 	./gradlew run
 
+run-with-psql:
+	export JDBC_DATABASE_URL="jdbc:postgresql://localhost:5432/mydb?user=admin&password=admin" && \
+	./gradlew run
+
 build:
 	./gradlew clean build
 
