@@ -14,13 +14,15 @@
           integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-<header class="mb-2 d-flex align-items-center gap-4 bg-dark px-4 py-3">
-    <a href="${NamedRoutes.basePath()}" class="h4 mb-0 text-white text-decoration-none">
-        Анализатор страниц
-    </a>
-    <a href="${NamedRoutes.urlsPath()}" class="mb-0 text-white text-decoration-none">
-        Сайты
-    </a>
+<header class="mb-2 d-flex align-items-center gap-5 bg-dark px-4 py-3">
+    <div class="container">
+        <a href="${NamedRoutes.basePath()}" class="h4 mb-0 text-white text-decoration-none">
+            Анализатор страниц
+        </a>
+        <a href="${NamedRoutes.urlsPath()}" class="mb-0 mx-3 text-white text-decoration-none">
+            Сайты
+        </a>
+    </div>
 </header>
 <main class="container">
     @if(page != null && page.getFlash() != null)

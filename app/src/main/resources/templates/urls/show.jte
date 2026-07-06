@@ -4,7 +4,9 @@
 @template.layout.page(
 page = page,
 content = @`
-    <table class="table table-bordered table-striped table-hover w-50" data-test="url">
+    <h1 class="h1 mt-5">Сайт ${page.getUrl().getName()}</h1>
+
+    <table class="table table-bordered table-striped table-hover" data-test="url">
         <tbody>
         <tr>
             <th scope="row" class="w-25">ID</th>
@@ -20,4 +22,42 @@ content = @`
         </tr>
         </tbody>
     </table>
-`)
+
+    <h2 class="h2 mt-5">Проверки</h2>
+
+    <form method="post" action="/urls/${page.getUrl().getId()}/checks">
+        <input class="btn btn-primary btn-lg mb-3 px-3" type="submit" value="Запустить проверку">
+    </form>
+
+    <table class="table table-bordered table-striped table-hover" data-test="checks">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Код ответа</th>
+            <th>h1</th>
+            <th>title</th>
+            <th>description</th>
+            <th>Дата создания</th>
+        </tr>
+        </thead>
+        <tbody>
+        <%--        @if (page.getChecks() != null && !page.getChecks().isEmpty())--%>
+        <%--            @for (check : page.getChecks())--%>
+        <%--                <tr>--%>
+        <%--                    <td>${check.getId()}</td>--%>
+        <%--                    <td>${check.getStatusCode()}</td>--%>
+        <%--                    <td>${check.getH1()}</td>--%>
+        <%--                    <td>${check.getTitle()}</td>--%>
+        <%--                    <td>${check.getDescription()}</td>--%>
+        <%--                    <td>${check.getCreatedAt().toLocalDate().toString()}</td>--%>
+        <%--                </tr>--%>
+        <%--            @endfor--%>
+        <%--        @else--%>
+        <tr>
+            <td colspan="6">Проверок пока нет</td>
+        </tr>
+        <%--        @endif--%>
+        </tbody>
+    </table>
+`
+)
