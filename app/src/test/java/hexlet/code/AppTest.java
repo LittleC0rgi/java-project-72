@@ -162,8 +162,8 @@ public class AppTest {
         var checks = UrlCheckRepository.findAllByUrlId(urlFromDb.getId());
         assertThat(checks).hasSize(1);
 
-        var check = checks.getFirst();
-
+        var check = checks.get(0);
+        
         assertThat(check.getStatusCode()).isEqualTo(200);
         assertThat(check.getTitle()).isEqualTo("Test page");
         assertThat(check.getH1()).isEqualTo("Hello world");
