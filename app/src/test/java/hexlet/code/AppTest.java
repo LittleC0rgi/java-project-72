@@ -84,11 +84,26 @@ public class AppTest {
 
     @Test
     public void testUrlPage() throws SQLException {
-        var url = new Url("https://www.example.com");
-        UrlRepository.save(url);
+        var urlStr = "https://www.example.com";
+        UrlRepository.save(new Url(urlStr));
+
+        var savedUrl = UrlRepository.findByName(urlStr);
+        assertThat(savedUrl).isPresent();
+
         JavalinTest.test(app, (server, client) -> {
-            var response = client.get(NamedRoutes.urlsPath());
+            var response = client.get(NamedRoutes.urlPath(savedUrl.get().getId()));
+
             assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string())
+                    .contains(urlStr);
+        });
+    }
+
+    @Test
+    public void testUrlNoExistPage() {
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get(NamedRoutes.urlPath("999"));
+            assertThat(response.code()).isEqualTo(404);
         });
     }
 }
