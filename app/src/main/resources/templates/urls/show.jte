@@ -1,4 +1,5 @@
 @import hexlet.code.dto.UrlPage
+@import hexlet.code.util.NamedRoutes
 @param UrlPage page
 
 @template.layout.page(
@@ -25,7 +26,7 @@ content = @`
 
     <h2 class="h2 mt-5">Проверки</h2>
 
-    <form method="post" action="/urls/${page.getUrl().getId()}/checks">
+    <form method="post" action="${NamedRoutes.urlCheckPath(page.getUrl().getId())}">
         <input class="btn btn-primary btn-lg mb-3 px-3" type="submit" value="Запустить проверку">
     </form>
 
@@ -41,22 +42,22 @@ content = @`
         </tr>
         </thead>
         <tbody>
-        <%--        @if (page.getChecks() != null && !page.getChecks().isEmpty())--%>
-        <%--            @for (check : page.getChecks())--%>
-        <%--                <tr>--%>
-        <%--                    <td>${check.getId()}</td>--%>
-        <%--                    <td>${check.getStatusCode()}</td>--%>
-        <%--                    <td>${check.getH1()}</td>--%>
-        <%--                    <td>${check.getTitle()}</td>--%>
-        <%--                    <td>${check.getDescription()}</td>--%>
-        <%--                    <td>${check.getCreatedAt().toLocalDate().toString()}</td>--%>
-        <%--                </tr>--%>
-        <%--            @endfor--%>
-        <%--        @else--%>
-        <tr>
-            <td colspan="6">Проверок пока нет</td>
-        </tr>
-        <%--        @endif--%>
+        @if (page.getChecks() != null && !page.getChecks().isEmpty())
+            @for (var check : page.getChecks())
+                <tr>
+                    <td>${check.getId()}</td>
+                    <td>${check.getStatusCode()}</td>
+                    <td>${check.getH1()}</td>
+                    <td>${check.getTitle()}</td>
+                    <td>${check.getDescription()}</td>
+                    <td>${check.getCreatedAt().toLocalDate().toString()}</td>
+                </tr>
+            @endfor
+        @else
+            <tr>
+                <td colspan="6">Проверок пока нет</td>
+            </tr>
+        @endif
         </tbody>
     </table>
 `

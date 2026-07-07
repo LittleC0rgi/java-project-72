@@ -61,7 +61,7 @@ public class UrlsController {
     }
 
     public static void index(Context ctx) throws SQLException {
-        var urls = UrlRepository.getEntities();
+        var urls = UrlRepository.getEntitiesWithInfo();
         var page = new UrlsPage(urls);
         setFlash(ctx, page);
         ctx.render("urls/index.jte", Map.of("page", page));
@@ -71,8 +71,14 @@ public class UrlsController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
-        var page = new UrlPage(url);
+        var page = new UrlPage(url, null);
         setFlash(ctx, page);
         ctx.render("urls/show.jte", Map.of("page", page));
+    }
+
+    public static void check(Context ctx) {
+        System.out.println("Check start");
+        var id = ctx.pathParamAsClass("id", Long.class).get();
+        ctx.redirect(NamedRoutes.urlPath(id));
     }
 }

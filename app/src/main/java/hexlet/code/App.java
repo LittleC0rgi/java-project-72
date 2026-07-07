@@ -65,6 +65,7 @@ public class App {
             config.routes.post(NamedRoutes.basePath(), UrlsController::create);
             config.routes.get(NamedRoutes.urlsPath(), UrlsController::index);
             config.routes.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
+            config.routes.post(NamedRoutes.urlCheckPath("{id}"), UrlsController::check);
         });
     }
 

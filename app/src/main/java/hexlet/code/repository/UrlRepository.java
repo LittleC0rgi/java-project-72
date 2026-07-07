@@ -1,6 +1,8 @@
 package hexlet.code.repository;
 
+import hexlet.code.dto.UrlInfo;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -82,6 +84,74 @@ public class UrlRepository extends BaseRepository {
                 result.add(car);
             }
             return result;
+        }
+    }
+
+    public static List<UrlInfo> getEntitiesWithInfo() throws SQLException {
+        var sql = """
+                SELECT
+                    urls.id,
+                    urls.name,
+                    urls.created_at,
+                
+                    url_checks.id AS check_id,
+                    url_checks.status_code,
+                    url_checks.title,
+                    url_checks.h1,
+                    url_checks.description,
+                    url_checks.url_id,
+                    url_checks.created_at AS check_created_at
+                
+                FROM urls
+                
+                LEFT JOIN url_checks
+                ON urls.id = url_checks.url_id
+                AND url_checks.id = (
+                    SELECT MAX(id)
+                    FROM url_checks
+                    WHERE url_id = urls.id
+                )
+                
+                ORDER BY urls.id
+                """;
+
+        try (var conn = dataSource.getConnection();
+             var stmt = conn.prepareStatement(sql);
+             var resultSet = stmt.executeQuery()) {
+
+            var urls = new ArrayList<UrlInfo>();
+
+            while (resultSet.next()) {
+                var url = new Url(
+                        resultSet.getString("name")
+                );
+
+                url.setId(resultSet.getLong("id"));
+                url.setCreatedAt(
+                        resultSet.getTimestamp("created_at").toLocalDateTime()
+                );
+
+                UrlCheck lastCheck = null;
+
+                var checkId = resultSet.getObject("check_id");
+
+                if (checkId != null) {
+                    lastCheck = new UrlCheck(
+                            ((Number) checkId).longValue(),
+                            resultSet.getInt("status_code"),
+                            resultSet.getString("title"),
+                            resultSet.getString("h1"),
+                            resultSet.getString("description"),
+                            resultSet.getLong("url_id"),
+                            resultSet.getTimestamp("check_created_at")
+                                    .toLocalDateTime()
+                    );
+                }
+
+                urls.add(new UrlInfo(url, lastCheck));
+            }
+
+            return urls;
         }
     }
 

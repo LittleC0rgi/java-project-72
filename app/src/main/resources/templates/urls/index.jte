@@ -16,16 +16,27 @@ content = @`
         </thead>
 
         <tbody>
-        @for(var url : page.getUrls())
+        @for(var urlInfo : page.getUrls())
             <tr>
-                <td>${url.getId()}</td>
+                <td>${urlInfo.getUrl().getId()}</td>
                 <td>
-                    <a href="${NamedRoutes.urlPath(url.getId())}" class="link-primary text-decoration-none">
-                        ${url.getName()}
+                    <a href="${NamedRoutes.urlPath(urlInfo.getUrl().getId())}"
+                       class="link-primary text-decoration-none">
+                        ${urlInfo.getUrl().getName()}
                     </a>
                 </td>
-                <td>${url.getCreatedAt().toLocalDate().toString()}</td>
-                <td><span class="badge bg-success">200</span></td>
+                <td>${urlInfo.getUrl().getCreatedAt().toLocalDate().toString()}</td>
+                <td>
+                    @if(urlInfo.getLastCheck() != null)
+                        <span class="badge">
+                            ${urlInfo.getLastCheck().getStatusCode()}
+                        </span>
+                    @else
+                        <span class="badge bg-secondary">
+                            Нет проверок
+                        </span>
+                    @endif
+                </td>
             </tr>
         @endfor
         </tbody>
