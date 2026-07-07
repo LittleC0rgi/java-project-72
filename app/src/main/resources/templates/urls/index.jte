@@ -28,7 +28,13 @@ content = @`
                 <td>${urlInfo.getUrl().getCreatedAt().toLocalDate().toString()}</td>
                 <td>
                     @if(urlInfo.getLastCheck() != null)
-                        <span class="badge">
+                        <span class="badge
+                            ${urlInfo.getLastCheck().getStatusCode() >= 200 && urlInfo.getLastCheck().getStatusCode() < 300 ? "bg-success" :
+                              urlInfo.getLastCheck().getStatusCode() >= 300 && urlInfo.getLastCheck().getStatusCode() < 400 ? "bg-warning" :
+                              urlInfo.getLastCheck().getStatusCode() >= 400 && urlInfo.getLastCheck().getStatusCode() < 500 ? "bg-danger" :
+                              urlInfo.getLastCheck().getStatusCode() >= 500 ? "bg-dark" :
+                              "bg-secondary"}">
+
                             ${urlInfo.getLastCheck().getStatusCode()}
                         </span>
                     @else

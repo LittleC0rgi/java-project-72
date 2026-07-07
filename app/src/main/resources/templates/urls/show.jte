@@ -46,7 +46,16 @@ content = @`
             @for (var check : page.getChecks())
                 <tr>
                     <td>${check.getId()}</td>
-                    <td>${check.getStatusCode()}</td>
+                    <td>
+                     <span class="badge
+                        ${check.getStatusCode() >= 200 && check.getStatusCode() < 300 ? "bg-success" :
+                          check.getStatusCode() >= 300 && check.getStatusCode() < 400 ? "bg-warning" :
+                          check.getStatusCode() >= 400 && check.getStatusCode() < 500 ? "bg-danger" :
+                          check.getStatusCode() >= 500 ? "bg-dark" :
+                          "bg-secondary"}">
+                        ${check.getStatusCode()}
+                    </span>
+                    </td>
                     <td>${check.getH1()}</td>
                     <td>${check.getTitle()}</td>
                     <td>${check.getDescription()}</td>

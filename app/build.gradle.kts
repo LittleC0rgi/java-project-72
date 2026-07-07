@@ -28,8 +28,9 @@ dependencies {
     implementation("io.javalin:javalin:7.2.2")
     implementation("io.javalin:javalin-rendering-jte:7.2.2")
     implementation("org.slf4j:slf4j-simple:2.0.18")
+    implementation("org.jsoup:jsoup:1.22.2")
 
-    compileOnly("com.konghq:unirest-java-core:4.10.0")
+    implementation("com.konghq:unirest-java-core:4.10.0")
 
     testCompileOnly("org.projectlombok:lombok:1.18.46")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
