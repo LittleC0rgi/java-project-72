@@ -39,6 +39,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("io.javalin:javalin-testtools:7.2.2")
+    testImplementation("com.squareup.okhttp3:mockwebserver3:5.4.0")
 }
 
 dependencyLocking {

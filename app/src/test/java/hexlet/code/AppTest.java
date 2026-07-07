@@ -1,10 +1,15 @@
 package hexlet.code;
 
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +20,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest {
 
+    private static MockWebServer mockServer;
     private Javalin app;
+
+    @BeforeAll
+    static void setUpServer() throws IOException {
+        mockServer = new MockWebServer();
+        mockServer.start();
+    }
+
+    @AfterAll
+    static void tearDown() {
+        mockServer.close();
+    }
 
     @BeforeEach
     public final void setUp() throws IOException, SQLException {
@@ -25,6 +42,7 @@ public class AppTest {
         );
         app = App.getApp();
         UrlRepository.removeAll();
+        UrlCheckRepository.removeAll();
     }
 
     @Test
@@ -105,5 +123,51 @@ public class AppTest {
             var response = client.get(NamedRoutes.urlPath("999"));
             assertThat(response.code()).isEqualTo(404);
         });
+    }
+
+    @Test
+    public void testCheck() throws SQLException, IOException {
+        mockServer.enqueue(new MockResponse.Builder()
+                .body("""
+                        <html>
+                            <head>
+                                <title>Test page</title>
+                                <meta name="description" content="Test description">
+                            </head>
+                            <body>
+                                <h1>Hello world</h1>
+                            </body>
+                        </html>
+                        """)
+                .build());
+
+        mockServer.start();
+        var urlStr = mockServer.url("/").toString();
+
+        var savedUrl = new Url(urlStr);
+        UrlRepository.save(savedUrl);
+
+        var urlFromDb = UrlRepository.findByName(urlStr)
+                .orElseThrow();
+
+        JavalinTest.test(app, (serverApp, client) -> {
+
+            var response = client.post(
+                    NamedRoutes.urlCheckPath(urlFromDb.getId())
+            );
+
+            assertThat(response.code()).isEqualTo(302);
+        });
+
+        var checks = UrlCheckRepository.findAllByUrlId(urlFromDb.getId());
+        assertThat(checks).hasSize(1);
+
+        var check = checks.getFirst();
+
+        assertThat(check.getStatusCode()).isEqualTo(200);
+        assertThat(check.getTitle()).isEqualTo("Test page");
+        assertThat(check.getH1()).isEqualTo("Hello world");
+        assertThat(check.getDescription()).isEqualTo("Test description");
+        assertThat(check.getUrlId()).isEqualTo(urlFromDb.getId());
     }
 }
