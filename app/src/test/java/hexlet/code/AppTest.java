@@ -58,7 +58,7 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var url = "https://www.example.com";
             var requestBody = "url=" + url;
-            var response = client.post(NamedRoutes.basePath(), requestBody);
+            var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(302);
             var saved = UrlRepository.findByName(url);
             assertThat(saved).isPresent();
@@ -73,7 +73,7 @@ public class AppTest {
             var urlEntity = new Url(url);
             UrlRepository.save(urlEntity);
             var requestBody = "url=" + url;
-            var response = client.post(NamedRoutes.basePath(), requestBody);
+            var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(302);
             var saved = UrlRepository.findByName(url);
             assertThat(saved).isPresent();
@@ -85,7 +85,7 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var invalidUrl = "not-a-valid-url";
             var requestBody = "url=" + invalidUrl;
-            var response = client.post(NamedRoutes.basePath(), requestBody);
+            var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(422);
             var saved = UrlRepository.findByName(invalidUrl);
             assertThat(saved).isNotPresent();
@@ -97,7 +97,7 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var invalidUrl256char = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,";
             var requestBody = "url=" + invalidUrl256char;
-            var response = client.post(NamedRoutes.basePath(), requestBody);
+            var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(422);
             var saved = UrlRepository.findByName(invalidUrl256char);
             assertThat(saved).isNotPresent();
