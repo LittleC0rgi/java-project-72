@@ -1,5 +1,6 @@
 @import hexlet.code.dto.UrlPage
 @import hexlet.code.util.NamedRoutes
+@import hexlet.code.util.StringUtils
 @param UrlPage page
 
 @template.layout.page(
@@ -54,9 +55,9 @@ content = @`
                         ${check.getStatusCode()}
                     </span>
                     </td>
-                    <td>${check.getH1()}</td>
-                    <td>${check.getTitle()}</td>
-                    <td>${check.getDescription()}</td>
+                    <td>${StringUtils.truncate(check.getH1())}</td>
+                    <td>${StringUtils.truncate(check.getTitle())}</td>
+                    <td>${StringUtils.truncate(check.getDescription())}</td>
                     <td>${check.getCreatedAt().toLocalDate().toString()}</td>
                 </tr>
             @endfor
