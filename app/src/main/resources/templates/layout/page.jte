@@ -26,7 +26,8 @@
 </header>
 <main class="container">
     @if(page != null && page.getFlash() != null)
-        <div class="alert alert-info mb-3" role="alert">
+        <div class="alert alert-${page.getFlashType() != null ? page.getFlashType().getBootstrapClass() : "info"} mb-3"
+             role="alert">
             ${page.getFlash()}
         </div>
     @endif
