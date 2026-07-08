@@ -59,9 +59,9 @@ public class App {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
             config.routes.before(ctx -> ctx.contentType("text/html; charset=utf-8"));
-            
+
             config.routes.get(NamedRoutes.basePath(), UrlsController::base);
-            config.routes.post(NamedRoutes.basePath(), UrlsController::create);
+            config.routes.post(NamedRoutes.urlsPath(), UrlsController::create);
             config.routes.get(NamedRoutes.urlsPath(), UrlsController::index);
             config.routes.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
             config.routes.post(NamedRoutes.urlCheckPath("{id}"), UrlsController::check);
