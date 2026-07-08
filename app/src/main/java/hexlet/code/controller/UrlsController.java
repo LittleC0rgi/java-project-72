@@ -52,6 +52,13 @@ public class UrlsController {
             return;
         }
 
+        if (name.length() > 255) {
+            Flash.danger(ctx, "URL превышает 255 символов");
+            ctx.status(422);
+            base(ctx);
+            return;
+        }
+
         var existingUrl = UrlRepository.findByName(name);
         if (existingUrl.isPresent()) {
             Flash.danger(ctx, "Страница уже существует");
