@@ -93,6 +93,18 @@ public class AppTest {
     }
 
     @Test
+    public void testCreateUrlInvalid256() {
+        JavalinTest.test(app, (server, client) -> {
+            var invalidUrl256char = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,";
+            var requestBody = "url=" + invalidUrl256char;
+            var response = client.post(NamedRoutes.basePath(), requestBody);
+            assertThat(response.code()).isEqualTo(422);
+            var saved = UrlRepository.findByName(invalidUrl256char);
+            assertThat(saved).isNotPresent();
+        });
+    }
+
+    @Test
     public void testUrlsPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlsPath());
