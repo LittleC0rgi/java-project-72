@@ -58,9 +58,8 @@ public class App {
         return Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
-            config.routes.before(ctx -> {
-                ctx.contentType("text/html; charset=utf-8");
-            });
+            config.routes.before(ctx -> ctx.contentType("text/html; charset=utf-8"));
+            
             config.routes.get(NamedRoutes.basePath(), UrlsController::base);
             config.routes.post(NamedRoutes.basePath(), UrlsController::create);
             config.routes.get(NamedRoutes.urlsPath(), UrlsController::index);

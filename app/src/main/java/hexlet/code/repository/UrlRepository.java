@@ -67,26 +67,6 @@ public class UrlRepository extends BaseRepository {
         }
     }
 
-    public static List<Url> getEntities() throws SQLException {
-        var sql = "SELECT * FROM urls ORDER BY created_at DESC, id DESC";
-        try (var conn = dataSource.getConnection();
-             var stmt = conn.prepareStatement(sql)) {
-            var resultSet = stmt.executeQuery();
-            var result = new ArrayList<Url>();
-            while (resultSet.next()) {
-                var id = resultSet.getLong("id");
-                var name = resultSet.getString("name");
-                var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
-
-                var car = new Url(name);
-                car.setId(id);
-                car.setCreatedAt(createdAt);
-                result.add(car);
-            }
-            return result;
-        }
-    }
-
     public static List<UrlInfo> getEntitiesWithInfo() throws SQLException {
         var sql = """
                 SELECT
