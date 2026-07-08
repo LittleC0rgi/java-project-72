@@ -92,7 +92,7 @@ public class UrlRepository extends BaseRepository {
                     WHERE url_id = urls.id
                 )
                 
-                ORDER BY urls.id
+                ORDER BY urls.id DESC
                 """;
 
         try (var conn = dataSource.getConnection();
