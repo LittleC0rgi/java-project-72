@@ -141,21 +141,18 @@ public class AppTest {
                         """)
                 .build());
 
-        mockServer.start();
-        var urlStr = mockServer.url("/").toString();
+        var url = mockServer.url("/").toString();
 
-        var savedUrl = new Url(urlStr);
+        var savedUrl = new Url(url);
         UrlRepository.save(savedUrl);
 
-        var urlFromDb = UrlRepository.findByName(urlStr)
+        var urlFromDb = UrlRepository.findByName(url)
                 .orElseThrow();
 
         JavalinTest.test(app, (serverApp, client) -> {
-
             var response = client.post(
                     NamedRoutes.urlCheckPath(urlFromDb.getId())
             );
-
             assertThat(response.code()).isEqualTo(302);
         });
 
@@ -163,11 +160,37 @@ public class AppTest {
         assertThat(checks).hasSize(1);
 
         var check = checks.get(0);
-        
+
         assertThat(check.getStatusCode()).isEqualTo(200);
         assertThat(check.getTitle()).isEqualTo("Test page");
         assertThat(check.getH1()).isEqualTo("Hello world");
         assertThat(check.getDescription()).isEqualTo("Test description");
         assertThat(check.getUrlId()).isEqualTo(urlFromDb.getId());
+    }
+
+    @Test
+    public void testCheckFailure() throws SQLException, IOException {
+        mockServer.enqueue(new MockResponse.Builder()
+                .code(500)
+                .build());
+
+        var url = mockServer.url("/").toString();
+
+        var savedUrl = new Url(url);
+        UrlRepository.save(savedUrl);
+
+        var urlFromDb = UrlRepository.findByName(url)
+                .orElseThrow();
+
+        JavalinTest.test(app, (serverApp, client) -> {
+            var response = client.post(
+                    NamedRoutes.urlCheckPath(urlFromDb.getId())
+            );
+            assertThat(response.code()).isEqualTo(302);
+        });
+
+        var checks = UrlCheckRepository.findAllByUrlId(urlFromDb.getId());
+
+        assertThat(checks).isEmpty();
     }
 }

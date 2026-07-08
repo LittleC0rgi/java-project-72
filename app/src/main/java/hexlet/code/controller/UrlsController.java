@@ -16,6 +16,7 @@ import kong.unirest.core.Unirest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -93,6 +94,10 @@ public class UrlsController {
                     .asString();
 
             int statusCode = response.getStatus();
+
+            if (statusCode >= 400) {
+                throw new IOException("Bad status code: " + statusCode);
+            }
 
             Document document = Jsoup.parse(response.getBody());
 
