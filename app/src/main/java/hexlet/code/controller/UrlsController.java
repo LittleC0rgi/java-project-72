@@ -129,7 +129,6 @@ public class UrlsController {
             UrlCheckRepository.save(check);
             Flash.success(ctx, "Страница успешно проверена");
         } catch (Exception e) {
-            e.printStackTrace();
             Flash.danger(ctx, "Произошла ошибка при проверке");
         } finally {
             ctx.redirect(NamedRoutes.urlPath(id));
