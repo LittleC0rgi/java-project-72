@@ -2,74 +2,71 @@ package hexlet.code.repository;
 
 import hexlet.code.model.UrlCheck;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UrlCheckRepository extends BaseRepository {
+    private static UrlCheck mapUrlCheck(ResultSet rs) throws SQLException {
+        return new UrlCheck(
+                rs.getLong("id"),
+                rs.getInt("status_code"),
+                rs.getString("title"),
+                rs.getString("h1"),
+                rs.getString("description"),
+                rs.getLong("url_id"),
+                rs.getTimestamp("created_at").toLocalDateTime()
+        );
+    }
+
     public static void save(UrlCheck urlCheck) throws SQLException {
         var sql = """
                 INSERT INTO url_checks
-                (status_code, title, h1, description, url_id, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (status_code, title, h1, description, url_id)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (var conn = dataSource.getConnection();
-             var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            var createdAt = LocalDateTime.now();
+            stmt.setInt(1, urlCheck.getStatusCode());
+            stmt.setString(2, urlCheck.getTitle());
+            stmt.setString(3, urlCheck.getH1());
+            stmt.setString(4, urlCheck.getDescription());
+            stmt.setLong(5, urlCheck.getUrlId());
 
-            preparedStatement.setInt(1, urlCheck.getStatusCode());
-            preparedStatement.setString(2, urlCheck.getTitle());
-            preparedStatement.setString(3, urlCheck.getH1());
-            preparedStatement.setString(4, urlCheck.getDescription());
-            preparedStatement.setLong(5, urlCheck.getUrlId());
-            preparedStatement.setTimestamp(6, Timestamp.valueOf(createdAt));
+            stmt.executeUpdate();
 
-            preparedStatement.executeUpdate();
+            try (var generatedKeys = stmt.getGeneratedKeys()) {
+                if (!generatedKeys.next()) {
+                    throw new SQLException("DB has not returned an id after saving an entity");
+                }
 
-            var generatedKeys = preparedStatement.getGeneratedKeys();
-            if (generatedKeys.next()) {
                 urlCheck.setId(generatedKeys.getLong(1));
-                urlCheck.setCreatedAt(createdAt);
-            } else {
-                throw new SQLException("DB have not returned an id after saving an entity");
             }
         }
     }
 
-
     public static List<UrlCheck> findAllByUrlId(long urlId) throws SQLException {
         var sql = "SELECT * FROM url_checks WHERE url_id = ?";
 
-        var urlChecks = new ArrayList<UrlCheck>();
+        var checks = new ArrayList<UrlCheck>();
 
         try (var conn = dataSource.getConnection();
-             var preparedStatement = conn.prepareStatement(sql)) {
+             var stmt = conn.prepareStatement(sql)) {
 
-            preparedStatement.setLong(1, urlId);
+            stmt.setLong(1, urlId);
 
-            var resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                var urlCheck = new UrlCheck(
-                        resultSet.getLong("id"),
-                        resultSet.getInt("status_code"),
-                        resultSet.getString("title"),
-                        resultSet.getString("h1"),
-                        resultSet.getString("description"),
-                        resultSet.getLong("url_id"),
-                        resultSet.getTimestamp("created_at").toLocalDateTime()
-                );
-
-                urlChecks.add(urlCheck);
+            try (var rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    checks.add(mapUrlCheck(rs));
+                }
             }
         }
 
-        return urlChecks;
+        return checks;
     }
 
     public static void removeAll() throws SQLException {
