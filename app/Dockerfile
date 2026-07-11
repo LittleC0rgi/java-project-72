@@ -6,7 +6,7 @@ COPY . .
 
 RUN ./gradlew clean installDist -x checkstyleMain -x checkstyleTest --no-daemon
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jdk-jammy
 
 WORKDIR /app
 
