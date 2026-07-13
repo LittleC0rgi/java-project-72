@@ -57,8 +57,12 @@ public class App {
 
         return Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
+            config.routes.before(ctx -> {
+                ctx.contentType("text/html; charset=utf-8");
+                ctx.attribute("flash", ctx.consumeSessionAttribute("flash"));
+                ctx.attribute("flashType", ctx.consumeSessionAttribute("flashType"));
+            });
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
-            config.routes.before(ctx -> ctx.contentType("text/html; charset=utf-8"));
 
             config.routes.get(NamedRoutes.basePath(), UrlsController::base);
             config.routes.post(NamedRoutes.urlsPath(), UrlsController::create);

@@ -7,7 +7,7 @@ import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
-import hexlet.code.util.Flash;
+import hexlet.code.types.FlashType;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
@@ -29,7 +29,6 @@ import java.util.Optional;
 public class UrlsController {
     public static void base(Context ctx) {
         var page = new BasePage();
-        Flash.bind(ctx, page);
         ctx.render("index.jte", Map.of("page", page));
     }
 
@@ -46,14 +45,16 @@ public class UrlsController {
                     ? String.format("%s://%s", protocol, host)
                     : String.format("%s://%s:%d", protocol, host, port);
         } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
-            Flash.danger(ctx, "Некорректный URL");
+            ctx.sessionAttribute("flash", "Некорректный URL");
+            ctx.sessionAttribute("flashType", FlashType.DANGER);
             ctx.status(422);
             base(ctx);
             return;
         }
 
         if (name.length() > 255) {
-            Flash.danger(ctx, "URL превышает 255 символов");
+            ctx.sessionAttribute("flash", "URL превышает 255 символов");
+            ctx.sessionAttribute("flashType", FlashType.DANGER);
             ctx.status(422);
             base(ctx);
             return;
@@ -61,21 +62,22 @@ public class UrlsController {
 
         var existingUrl = UrlRepository.findByName(name);
         if (existingUrl.isPresent()) {
-            Flash.danger(ctx, "Страница уже существует");
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.sessionAttribute("flashType", FlashType.DANGER);
             ctx.redirect(NamedRoutes.urlPath(existingUrl.get().getId()));
             return;
         }
 
         var url = new Url(name);
         UrlRepository.save(url);
-        Flash.success(ctx, "Страница успешно добавлена");
+        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        ctx.sessionAttribute("flashType", FlashType.SUCCESS);
         ctx.redirect(NamedRoutes.urlPath(url.getId()));
     }
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntitiesWithInfo();
         var page = new UrlsPage(urls);
-        Flash.bind(ctx, page);
         ctx.render("urls/index.jte", Map.of("page", page));
     }
 
@@ -85,7 +87,6 @@ public class UrlsController {
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
         var checks = UrlCheckRepository.findAllByUrlId(url.getId());
         var page = new UrlPage(url, checks);
-        Flash.bind(ctx, page);
         ctx.render("urls/show.jte", Map.of("page", page));
     }
 
@@ -127,9 +128,11 @@ public class UrlsController {
             );
 
             UrlCheckRepository.save(check);
-            Flash.success(ctx, "Страница успешно проверена");
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.sessionAttribute("flashType", FlashType.SUCCESS);
         } catch (Exception e) {
-            Flash.danger(ctx, "Произошла ошибка при проверке");
+            ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
+            ctx.sessionAttribute("flashType", FlashType.DANGER);
         } finally {
             ctx.redirect(NamedRoutes.urlPath(id));
         }
