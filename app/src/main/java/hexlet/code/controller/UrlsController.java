@@ -51,16 +51,16 @@ public class UrlsController {
                     ? String.format("%s://%s", protocol, host)
                     : String.format("%s://%s:%d", protocol, host, port);
         } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
-            ctx.sessionAttribute("flash", "Некорректный URL");
-            ctx.sessionAttribute("flashType", FlashType.DANGER);
+            ctx.attribute("flash", "Некорректный URL");
+            ctx.attribute("flashType", FlashType.DANGER);
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT.getCode());
             base(ctx);
             return;
         }
 
         if (name.length() > 255) {
-            ctx.sessionAttribute("flash", "URL превышает 255 символов");
-            ctx.sessionAttribute("flashType", FlashType.DANGER);
+            ctx.attribute("flash", "URL превышает 255 символов");
+            ctx.attribute("flashType", FlashType.DANGER);
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT.getCode());
             base(ctx);
             return;
