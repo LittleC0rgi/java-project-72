@@ -26,11 +26,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-
 public class UrlsController {
+    public static void render(Context ctx, String template, BasePage page) {
+        page.setFlash(ctx.attribute("flash"));
+        page.setFlashType(ctx.attribute("flashType"));
+        ctx.render(template, Map.of("page", page));
+    }
+
     public static void base(Context ctx) {
         var page = new BasePage();
-        ctx.render("index.jte", Map.of("page", page));
+        render(ctx, "index.jte", page);
     }
 
     public static void create(Context ctx) throws SQLException {
@@ -79,7 +84,7 @@ public class UrlsController {
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntitiesWithInfo();
         var page = new UrlsPage(urls);
-        ctx.render("urls/index.jte", Map.of("page", page));
+        render(ctx, "urls/index.jte", page);
     }
 
     public static void show(Context ctx) throws SQLException {
@@ -88,15 +93,14 @@ public class UrlsController {
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
         var checks = UrlCheckRepository.findAllByUrlId(url.getId());
         var page = new UrlPage(url, checks);
-        ctx.render("urls/show.jte", Map.of("page", page));
+        render(ctx, "urls/show.jte", page);
     }
 
     public static void check(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
 
         var url = UrlRepository.find(id)
-                .orElseThrow(() ->
-                        new NotFoundResponse("Entity with id = " + id + " not found"));
+                .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
 
         try {
             HttpResponse<String> response = Unirest.get(url.getName())
@@ -125,8 +129,7 @@ public class UrlsController {
                     title,
                     h1,
                     description,
-                    id
-            );
+                    id);
 
             UrlCheckRepository.save(check);
             ctx.sessionAttribute("flash", "Страница успешно проверена");
