@@ -1,6 +1,7 @@
 @import hexlet.code.dto.UrlPage
 @import hexlet.code.util.NamedRoutes
 @import hexlet.code.util.StringUtils
+@import io.javalin.http.HttpStatus
 @param UrlPage page
 
 @template.layout.page(
@@ -48,10 +49,10 @@ content = @`
                 <tr>
                     <td>${check.getId()}</td>
                     <td>
-                     <span class="badge
-                        ${check.getStatusCode() >= 200 && check.getStatusCode() < 300 ? "bg-success" :
-                          check.getStatusCode() >= 300 && check.getStatusCode() < 400 ? "bg-warning" :
-                          "bg-secondary"}">
+                        <span class="badge
+                            ${check.getStatusCode() >= HttpStatus.OK.getCode() && check.getStatusCode() < HttpStatus.MULTIPLE_CHOICES.getCode() ? "bg-success" :
+                              check.getStatusCode() >= HttpStatus.MULTIPLE_CHOICES.getCode() && check.getStatusCode() < HttpStatus.BAD_REQUEST.getCode() ? "bg-warning" :
+                              "bg-secondary"}">
                         ${check.getStatusCode()}
                     </span>
                     </td>

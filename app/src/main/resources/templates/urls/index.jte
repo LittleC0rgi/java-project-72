@@ -1,5 +1,6 @@
 @import hexlet.code.dto.UrlsPage
 @import hexlet.code.util.NamedRoutes
+@import io.javalin.http.HttpStatus
 @param UrlsPage page  
 
 @template.layout.page(
@@ -10,7 +11,7 @@ content = @`
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Имя</th>
-            <th scope="col">Дата создания</th>
+            <th scope="col">Последняя проверка</th>
             <th scope="col">Код ответа</th>
         </tr>
         </thead>
@@ -25,12 +26,18 @@ content = @`
                         ${urlInfo.getUrl().getName()}
                     </a>
                 </td>
-                <td>${urlInfo.getUrl().getCreatedAt().toLocalDate().toString()}</td>
+                <td>
+                    @if(urlInfo.getLastCheck() != null)
+                        ${urlInfo.getLastCheck().getCreatedAt().toLocalDate().toString()}
+                    @else
+                        —
+                    @endif
+                </td>
                 <td>
                     @if(urlInfo.getLastCheck() != null)
                         <span class="badge
-                            ${urlInfo.getLastCheck().getStatusCode() >= 200 && urlInfo.getLastCheck().getStatusCode() < 300 ? "bg-success" :
-                              urlInfo.getLastCheck().getStatusCode() >= 300 && urlInfo.getLastCheck().getStatusCode() < 400 ? "bg-warning" :
+                            ${urlInfo.getLastCheck().getStatusCode() >= HttpStatus.OK.getCode() && urlInfo.getLastCheck().getStatusCode() < HttpStatus.MULTIPLE_CHOICES.getCode() ? "bg-success" :
+                              urlInfo.getLastCheck().getStatusCode() >= HttpStatus.MULTIPLE_CHOICES.getCode() && urlInfo.getLastCheck().getStatusCode() < HttpStatus.BAD_REQUEST.getCode() ? "bg-warning" :
                               "bg-secondary"}">
 
                             ${urlInfo.getLastCheck().getStatusCode()}
