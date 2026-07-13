@@ -10,6 +10,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.types.FlashType;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
@@ -47,7 +48,7 @@ public class UrlsController {
         } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flashType", FlashType.DANGER);
-            ctx.status(422);
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT.getCode());
             base(ctx);
             return;
         }
@@ -55,7 +56,7 @@ public class UrlsController {
         if (name.length() > 255) {
             ctx.sessionAttribute("flash", "URL превышает 255 символов");
             ctx.sessionAttribute("flashType", FlashType.DANGER);
-            ctx.status(422);
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT.getCode());
             base(ctx);
             return;
         }
@@ -103,7 +104,7 @@ public class UrlsController {
 
             int statusCode = response.getStatus();
 
-            if (statusCode >= 400) {
+            if (statusCode >= HttpStatus.BAD_REQUEST.getCode()) {
                 throw new IOException("Bad status code: " + statusCode);
             }
 

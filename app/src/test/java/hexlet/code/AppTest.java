@@ -5,6 +5,7 @@ import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
 import io.javalin.testtools.JavalinTest;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
@@ -49,7 +50,7 @@ public class AppTest {
     public void testBasePage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.basePath());
-            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.code()).isEqualTo(HttpStatus.OK.getCode());
         });
     }
 
@@ -59,7 +60,7 @@ public class AppTest {
             var url = "https://www.example.com";
             var requestBody = "url=" + url;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
-            assertThat(response.code()).isEqualTo(302);
+            assertThat(response.code()).isEqualTo(HttpStatus.FOUND.getCode());
             var saved = UrlRepository.findByName(url);
             assertThat(saved).isPresent();
             assertThat(saved.get().getName()).isEqualTo(url);
@@ -74,7 +75,7 @@ public class AppTest {
             UrlRepository.save(urlEntity);
             var requestBody = "url=" + url;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
-            assertThat(response.code()).isEqualTo(302);
+            assertThat(response.code()).isEqualTo(HttpStatus.FOUND.getCode());
             var saved = UrlRepository.findByName(url);
             assertThat(saved).isPresent();
         });
@@ -86,7 +87,7 @@ public class AppTest {
             var invalidUrl = "not-a-valid-url";
             var requestBody = "url=" + invalidUrl;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
-            assertThat(response.code()).isEqualTo(422);
+            assertThat(response.code()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT.getCode());
             var saved = UrlRepository.findByName(invalidUrl);
             assertThat(saved).isNotPresent();
         });
@@ -98,7 +99,7 @@ public class AppTest {
             var invalidUrl256char = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,";
             var requestBody = "url=" + invalidUrl256char;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
-            assertThat(response.code()).isEqualTo(422);
+            assertThat(response.code()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT.getCode());
             var saved = UrlRepository.findByName(invalidUrl256char);
             assertThat(saved).isNotPresent();
         });
@@ -108,7 +109,7 @@ public class AppTest {
     public void testUrlsPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlsPath());
-            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.code()).isEqualTo(HttpStatus.OK.getCode());
         });
     }
 
@@ -123,7 +124,7 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlPath(savedUrl.get().getId()));
 
-            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.code()).isEqualTo(HttpStatus.OK.getCode());
             assertThat(response.body().string())
                     .contains(urlStr);
         });
@@ -133,7 +134,7 @@ public class AppTest {
     public void testUrlNoExistPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlPath("999"));
-            assertThat(response.code()).isEqualTo(404);
+            assertThat(response.code()).isEqualTo(HttpStatus.NOT_FOUND.getCode());
         });
     }
 
@@ -165,7 +166,7 @@ public class AppTest {
             var response = client.post(
                     NamedRoutes.urlCheckPath(urlFromDb.getId())
             );
-            assertThat(response.code()).isEqualTo(302);
+            assertThat(response.code()).isEqualTo(HttpStatus.FOUND.getCode());
         });
 
         var checks = UrlCheckRepository.findAllByUrlId(urlFromDb.getId());
@@ -173,7 +174,7 @@ public class AppTest {
 
         var check = checks.get(0);
 
-        assertThat(check.getStatusCode()).isEqualTo(200);
+        assertThat(check.getStatusCode()).isEqualTo(HttpStatus.OK.getCode());
         assertThat(check.getTitle()).isEqualTo("Test page");
         assertThat(check.getH1()).isEqualTo("Hello world");
         assertThat(check.getDescription()).isEqualTo("Test description");
@@ -181,9 +182,9 @@ public class AppTest {
     }
 
     @Test
-    public void testCheckFailure() throws SQLException, IOException {
+    public void testCheckFailure() throws SQLException {
         mockServer.enqueue(new MockResponse.Builder()
-                .code(500)
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
                 .build());
 
         var url = mockServer.url("/").toString();
@@ -198,7 +199,7 @@ public class AppTest {
             var response = client.post(
                     NamedRoutes.urlCheckPath(urlFromDb.getId())
             );
-            assertThat(response.code()).isEqualTo(302);
+            assertThat(response.code()).isEqualTo(HttpStatus.FOUND.getCode());
         });
 
         var checks = UrlCheckRepository.findAllByUrlId(urlFromDb.getId());
